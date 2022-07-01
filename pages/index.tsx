@@ -61,28 +61,22 @@ const fetcher = async (url: string) =>
 const Homepage: NextPage = () => {
   const [page, setPage] = useState(1);
   const baseURL = `http://54.177.198.128:8001/api/cat-amenities-childs/?format=json&page=${page}`;
+
   const { data, error } = useSWR(baseURL, fetcher);
 
   if (error) {
     return (
       <div>
-        <h2>There was an error</h2>
+        <h2>There was an error.</h2>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <AnimatePresence>
-        <motion.div
-          initial={{ backgroundColor: 'black', height: '0vh' }}
-          animate={{ height: '100vh' }}
-          exit={{ height: '0vh', transition: { delay: 3 } }}
-          className={'flex justify-center items-center'}
-        >
-          <h2 className="text-5xl text-white font-title">Loading...</h2>
-        </motion.div>
-      </AnimatePresence>
+      <div>
+        <h2>Loading...</h2>
+      </div>
     );
   }
 
@@ -107,13 +101,13 @@ const Homepage: NextPage = () => {
       </div>
 
       <motion.div
-        className="grid grid-cols-8 gap-4 px-6 py-4 auto-rows-fr"
+        className="grid grid-cols-2 gap-4 px-6 py-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-fr"
         animate={{ y: 10 }}
       >
         {data.results.map((item: Result) => (
-          <div className="p-2 border-2">
+          <div className="p-2 border-2" key={item.id}>
             <p>{item.id}</p>
-            <h3>{item.name}</h3>
+            <h3 className="text-lg font-text">{item.name}</h3>
           </div>
         ))}
       </motion.div>
