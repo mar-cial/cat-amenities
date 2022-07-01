@@ -5,6 +5,10 @@ import fetcher from '../../lib/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
 import PaginationContainer from '../../components/PaginationContainer'
 import PageHeader from '../../components/PageHeader'
+import {
+  mainContentVariants,
+  loadingVariants,
+} from '../../animations/childsAnimation'
 
 export interface ResponseData {
   count: number
@@ -56,9 +60,10 @@ const ChildrenPage: NextPage = () => {
       <AnimatePresence>
         {data ? (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            variants={mainContentVariants}
+            animate="enter"
+            initial="initial"
+            exit={'exit'}
             key={'main-content'}
           >
             <PaginationContainer
@@ -78,9 +83,10 @@ const ChildrenPage: NextPage = () => {
           </motion.div>
         ) : (
           <motion.div
-            animate={{ height: 50 }}
-            initial={{ height: 0 }}
-            exit={{ height: 0 }}
+            variants={loadingVariants}
+            animate="enter"
+            initial="hidden"
+            exit={'exit'}
             className="flex justify-center items-center bg-black text-white"
             key={'loading-screen'}
           >
