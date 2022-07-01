@@ -7,6 +7,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        sans: [
+          'Poppins',
+          'Roboto'
+        ],
         title: 'Righteous',
         text: 'Poppins',
       },
