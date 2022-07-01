@@ -2,10 +2,8 @@
 
 //react / nextjs imports
 import { NextPage } from 'next'
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import useSWR from 'swr'
 import Link from 'next/link'
+import PageHeader from '../components/PageHeader'
 
 // media imports
 
@@ -19,9 +17,7 @@ import Link from 'next/link'
 const Homepage: NextPage = () => {
   return (
     <div>
-      <header className="px-6 py-3">
-        <h1 className="text-4xl font-title">Doorvel</h1>
-      </header>
+      <PageHeader />
 
       <div>
         <Link href={'/childs'} passHref>
