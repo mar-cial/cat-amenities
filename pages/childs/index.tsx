@@ -3,6 +3,8 @@ import { useState } from 'react'
 import useSWR from 'swr'
 import fetcher from '../../lib/fetcher'
 import { AnimatePresence, motion } from 'framer-motion'
+import PaginationContainer from '../../components/PaginationContainer'
+import PageHeader from '../../components/PageHeader'
 
 export interface ResponseData {
   count: number
@@ -47,17 +49,10 @@ const ChildrenPage: NextPage = () => {
   const handleIncrease = () => {
     page < data.count / 100 ? setPage(page + 1) : setPage(page)
   }
-  const increasePage = () => {
-    console.log(page)
-    setPage((prev) => (prev > 1 ? (prev = -1) : prev))
-  }
-  const decreasePage = () => {
-    console.log(page)
-    setPage((prev) => (prev < data.count / 100 ? (prev = prev + 1) : prev))
-  }
 
   return (
-    <div>
+    <>
+      <PageHeader />
       <AnimatePresence>
         {data ? (
           <motion.div
@@ -66,11 +61,11 @@ const ChildrenPage: NextPage = () => {
             exit={{ opacity: 0 }}
             key={'main-content'}
           >
-            <div className="flex items-center justify-between px-6 py-4">
-              <button onClick={handleDecrease}>Decrease</button>
-              <p>{page}</p>
-              <button onClick={handleIncrease}>Increase</button>
-            </div>
+            <PaginationContainer
+              decreaseAction={handleDecrease}
+              increaseAction={handleIncrease}
+              page={page}
+            />
 
             <motion.div className="grid grid-cols-2 gap-4 px-6 py-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-fr">
               {data.results.map((item: Result) => (
@@ -93,7 +88,7 @@ const ChildrenPage: NextPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }
 export default ChildrenPage
