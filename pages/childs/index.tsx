@@ -40,9 +40,21 @@ const ChildrenPage: NextPage = () => {
     )
   }
 
-  const increasePage = () => setPage((prev) => (prev > 1 ? prev - 1 : prev))
-  const decresePage = () =>
-    setPage((prev) => (prev < data.count / 100 ? prev + 1 : prev))
+  const handleDecrease = () => {
+    page > 1 ? setPage(page - 1) : setPage(page)
+  }
+
+  const handleIncrease = () => {
+    page < data.count / 100 ? setPage(page + 1) : setPage(page)
+  }
+  const increasePage = () => {
+    console.log(page)
+    setPage((prev) => (prev > 1 ? (prev = -1) : prev))
+  }
+  const decreasePage = () => {
+    console.log(page)
+    setPage((prev) => (prev < data.count / 100 ? (prev = prev + 1) : prev))
+  }
 
   return (
     <div>
@@ -55,19 +67,9 @@ const ChildrenPage: NextPage = () => {
             key={'main-content'}
           >
             <div className="flex items-center justify-between px-6 py-4">
-              <button
-                onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : prev))}
-              >
-                Decrease
-              </button>
+              <button onClick={handleDecrease}>Decrease</button>
               <p>{page}</p>
-              <button
-                onClick={() =>
-                  setPage((prev) => (prev < data.count / 100 ? prev + 1 : prev))
-                }
-              >
-                Increase
-              </button>
+              <button onClick={handleIncrease}>Increase</button>
             </div>
 
             <motion.div className="grid grid-cols-2 gap-4 px-6 py-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-fr">
