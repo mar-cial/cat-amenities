@@ -1,8 +1,10 @@
 // date created dd/mm/yy: 30 / 06 / 2022 - 11 : 24 : 14 by César Marcial
 
 //react / nextjs imports
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from 'next';
-import Image from 'next/image';
+import { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import useSWR from 'swr';
 
 // media imports
 
@@ -12,55 +14,109 @@ import Image from 'next/image';
 
 // interfaces
 export interface ResponseData {
-  data: Datum[];
-  date_recived: DateRecived;
+  count: number;
+  next: string;
+  previous: null;
+  results: Result[];
 }
 
-export interface Datum {
+export interface Result {
   id: number;
-  property_category_id: number;
   name: string;
   seo_friendly: string;
-  active_record: boolean;
-  created_at: Date;
-  updated_at: Date;
-  created_by: string;
-}
-
-export interface DateRecived {
-  format: string;
+  property_category: number;
+  amenity_parent: number;
 }
 
 // next data fetching
 
+const loadingVariants = {
+  enter: {
+    y: 0,
+    opacity: 1,
+  },
+  hidden: {
+    opacity: 0,
+    y: -100,
+  },
+  exit: {
+    opacity: 0,
+    y: -100,
+    transition: {
+      delay: 1,
+    },
+  },
+};
+
+/**
+ * Fetches json from the provided url.
+ *
+ * @param url The address string to fetch
+ * @returns
+ */
+const fetcher = async (url: string) =>
+  await fetch(url).then((res) => res.json().catch((err) => console.log(err)));
+
 // start of component
 const Homepage: NextPage = () => {
-  console.log(parents);
+  const [page, setPage] = useState(1);
+  const baseURL = `http://54.177.198.128:8001/api/cat-amenities-childs/?format=json&page=${page}`;
+  const { data, error } = useSWR(baseURL, fetcher);
+
+  if (error) {
+    return (
+      <div>
+        <h2>There was an error</h2>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ backgroundColor: 'black', height: '0vh' }}
+          animate={{ height: '100vh' }}
+          exit={{ height: '0vh', transition: { delay: 3 } }}
+          className={'flex justify-center items-center'}
+        >
+          <h2 className="text-5xl text-white font-title">Loading...</h2>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <div>
-      <nav className="p-4">
-        <h1 className="text-4xl font-bold tracking-widest font-title">
-          Doorvel.
-        </h1>
-      </nav>
+      <header>
+        <h1 className="px-6 py-4 text-4xl font-title">Doorvel</h1>
+      </header>
 
-      <main className="flex flex-col items-center justify-center px-12 py-4 md:py-8">
-        <section className="grid w-full gap-6 md:grid-cols-2">
-          <div className="flex items-center justify-center w-full">
-            <div className="w-1/2">
-              <Image
-                src={'/cat.png'}
-                width={880}
-                height={1428}
-                layout="responsive"
-              />
-            </div>
+      <div className="flex items-center justify-between px-6 py-4">
+        <button onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : prev))}>
+          Decrease
+        </button>
+        <p>{page}</p>
+        <button
+          onClick={() =>
+            setPage((prev) => (prev < data.count / 100 ? prev + 1 : prev))
+          }
+        >
+          Increase
+        </button>
+      </div>
+
+      <motion.div
+        className="grid grid-cols-8 gap-4 px-6 py-4 auto-rows-fr"
+        animate={{ y: 10 }}
+      >
+        {data.results.map((item: Result) => (
+          <div className="p-2 border-2">
+            <p>{item.id}</p>
+            <h3>{item.name}</h3>
           </div>
-
-          <div className="grid grid-rows-2 gap-4"></div>
-        </section>
-      </main>
+        ))}
+      </motion.div>
     </div>
   );
 };
