@@ -47,7 +47,7 @@ const CategoriesDetail = ({
       <MainContainerView>
         <div className="grid gap-4 py-6">
           {children.map((c: ChildsResult) => (
-            <ChildDetailContainerView c={c} />
+            <ChildDetailContainerView c={c} key={c.id} />
           ))}
         </div>
       </MainContainerView>
