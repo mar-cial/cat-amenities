@@ -1,64 +1,49 @@
-import { NextPage } from 'next'
-import { useState } from 'react'
-import useSWR from 'swr'
-import fetcher from '../../lib/fetcher'
-import { AnimatePresence, motion } from 'framer-motion'
-import PaginationContainer from '../../components/PaginationContainer'
-import PageHeader from '../../components/PageHeader'
-import {
-  mainContentVariants,
-  loadingVariants,
-} from '../../animations/childsAnimation'
+import { NextPage } from 'next';
+import { useState } from 'react';
+import useSWR from 'swr';
+import fetcher from '../../lib/fetcher';
+import { AnimatePresence, motion } from 'framer-motion';
+import PaginationContainerView from '../../components/PaginationContainerView';
+import PageHeaderView from '../../components/PageHeaderView';
+import { mainContentVariants } from '../../animations/childsAnimation';
+import { ChildsResult } from '../../model/childsResponse';
+import ChildsItemView from '../../components/ChildsItemView';
 
-export interface ResponseData {
-  count: number
-  next: string
-  previous: null
-  results: Result[]
-}
-
-export interface Result {
-  id: number
-  name: string
-  seo_friendly: string
-  property_category: number
-  amenity_parent: number
-}
 const ChildrenPage: NextPage = () => {
-  const [page, setPage] = useState(1)
-  const baseURL = `http://54.177.198.128:8001/api/cat-amenities-childs/?format=json&page=${page}`
+  const [page, setPage] = useState(1);
+  const baseURL = `http://54.177.198.128:8001/api/cat-amenities-childs/?format=json&page=${page}`;
 
   // swr for caching, pagination, error handling, etc.
   // Actual fetching or remote url is done by fetcher function,
   // using async/await fetch()
-  const { data, error } = useSWR(baseURL, fetcher)
+  const { data, error } = useSWR(baseURL, fetcher);
 
   // check for errors
   if (error) {
-    console.log(`error fetching data:\n${error}`)
+    console.log(`error fetching data:\n${error}`);
 
     return (
-      <div className="h-screen flex justify-center items-center">
-        <h2 className="font-title text-6xl">
+      <div className="flex items-center justify-center h-screen">
+        <h2 className="text-6xl font-title">
           There was an error fetching data.
         </h2>
       </div>
-    )
+    );
   }
 
   const handleDecrease = () => {
-    page > 1 ? setPage(page - 1) : setPage(page)
-  }
+    page > 1 ? setPage(page - 1) : setPage(page);
+  };
 
   const handleIncrease = () => {
-    page < data.count / 100 ? setPage(page + 1) : setPage(page)
-  }
+    page < data.count / 100 ? setPage(page + 1) : setPage(page);
+  };
 
   return (
     <>
-      <PageHeader />
+      <PageHeaderView />
       <AnimatePresence>
-        {data ? (
+        {data && (
           <motion.div
             variants={mainContentVariants}
             animate="enter"
@@ -66,35 +51,21 @@ const ChildrenPage: NextPage = () => {
             exit={'exit'}
             key={'main-content'}
           >
-            <PaginationContainer
+            <PaginationContainerView
               decreaseAction={handleDecrease}
               increaseAction={handleIncrease}
               page={page}
             />
 
-            <motion.div className="grid grid-cols-2 gap-4 px-6 py-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-fr">
-              {data.results.map((item: Result) => (
-                <div className="p-2 border-2" key={item.id}>
-                  <p>{item.id}</p>
-                  <h3 className="text-lg font-text">{item.name}</h3>
-                </div>
+            <motion.div className="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-fr">
+              {data.results.map((item: ChildsResult) => (
+                <ChildsItemView item={item} key={item.id} />
               ))}
             </motion.div>
-          </motion.div>
-        ) : (
-          <motion.div
-            variants={loadingVariants}
-            animate="enter"
-            initial="hidden"
-            exit={'exit'}
-            className="flex justify-center items-center bg-black text-white"
-            key={'loading-screen'}
-          >
-            <h2 className="font-title text-3xl">Loading...</h2>
           </motion.div>
         )}
       </AnimatePresence>
     </>
-  )
-}
-export default ChildrenPage
+  );
+};
+export default ChildrenPage;
