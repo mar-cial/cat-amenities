@@ -6,13 +6,8 @@ import PageHeaderView from '../../components/PageHeaderView';
 import { ChildsResponse, ChildsResult } from '../../model/childsResponse';
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const res: Response = await fetch(
-    'http://54.177.198.128:8001/api/cat-amenities-childs/'
-  );
-
-  const childsResponse: ChildsResponse = await res.json();
-
   const nPaths = [...Array(16).keys()];
+  nPaths.shift();
   const paths = nPaths.map((c) => ({
     params: { id: c.toString() },
   }));
